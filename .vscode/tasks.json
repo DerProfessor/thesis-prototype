@@ -1,0 +1,25 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Setup workspace",
+            "type": "shell",
+            "command": "cd interface && yarn install",
+            "problemMatcher": []
+        },
+        {
+            "label": "Huggingface login",
+            "type": "shell",
+            "command": "source /Python3_venvs/coqui-tts/bin/activate && huggingface-cli login",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run coqui-tts server",
+            "type": "shell",
+            "command": "source /Python3_venvs/coqui-tts/bin/activate && tts-server --use_cuda true",
+            "problemMatcher": []
+        }
+    ]
+}
