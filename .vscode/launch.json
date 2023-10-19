@@ -22,11 +22,25 @@
             "console": "integratedTerminal"
         },
         {
+            "type": "firefox",
+            "request": "launch",
+            "name": "Debug frontend in Firefox",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/interface/",
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Debug frontend in Chrome",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/interface/",
+        },
+        {
             "type": "msedge",
             "request": "launch",
             "name": "Debug frontend in Edge",
             "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}/interface",
+            "webRoot": "${workspaceFolder}/interface/",
         },
         {
             "name": "Launch backend (python)",
