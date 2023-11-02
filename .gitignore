@@ -2,3 +2,5 @@
 backend/**/__pycache__/
 /interface/node_modules/
 /.vscode
+# Ignore cache dir for torch and huggingface models
+/.cache
