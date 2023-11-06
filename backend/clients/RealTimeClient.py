@@ -1,5 +1,5 @@
 import logging
-from diart import OnlineSpeakerDiarization
+from diart import SpeakerDiarization
 from config import DIARIZATION_PIPELINE_CONFIG, ClientState
 import asyncio
 import diart.operators as dops
@@ -15,7 +15,7 @@ class RealTimeClient(Client):
     def __init__(self, sid, socket, config):
         super().__init__(sid, socket, config)
         self.pipeline_config = DIARIZATION_PIPELINE_CONFIG
-        self.diarization_pipeline = OnlineSpeakerDiarization(self.pipeline_config)
+        self.diarization_pipeline = SpeakerDiarization(self.pipeline_config)
         self.chunk_receiving_thread = None
         self.source = StreamingSocketAudioSource(sid)
 

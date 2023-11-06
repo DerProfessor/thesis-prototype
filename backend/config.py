@@ -1,4 +1,4 @@
-from diart import PipelineConfig
+from diart.blocks import SpeakerDiarizationConfig
 from enum import Enum
 
 TRANSCRIPTION_DEVICE = "cuda"  # use 'cpu' if it doesn't work
@@ -10,7 +10,7 @@ MINIMUM_SPEECH_IMPROVEMENT_LENGTH = 0.1  # Diart will self-improve its speaker r
 NEW_SPEAKER_THRESHOLD = 0.57  # Threshold for new speaker detection, the lower, the more sensitive Diart is to speech differences and will be more likely to generate new speakers
 STEP = 0.5
 
-DIARIZATION_PIPELINE_CONFIG = PipelineConfig(
+DIARIZATION_PIPELINE_CONFIG = SpeakerDiarizationConfig(
     duration=SLIDING_WINDOW_LENGTH,
     step=STEP,
     latency="min",

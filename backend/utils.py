@@ -5,12 +5,25 @@ import os
 import shutil
 from config import SPEAKER_MAPPING, SAMPLE_RATE, TEMP_FILE_PATH, WhisperModelSize, LANGUAGE_MAPPING, \
     NON_ENGLISH_SPECIFIC_MODELS
-from diart.sources import AudioSource
+from diart.sources import MicrophoneAudioSource, AudioSource
 from diart.utils import decode_audio
 import logging
 
+from typing import Text
 
-class StreamingSocketAudioSource(AudioSource):
+###### Temporary wrapper class ######
+####### Needs to be replaced ########
+class SimpleAudioSource(AudioSource):
+    def __init__(self, uri: Text, sample_rate: int):
+        super().__init__(uri=uri, sample_rate=sample_rate)
+
+    def close(self):
+        pass
+
+    def read(self):
+        pass
+
+class StreamingSocketAudioSource(SimpleAudioSource):
     def __init__(self, sid):
         self.sample_rate = SAMPLE_RATE
         super().__init__(uri=sid, sample_rate=self.sample_rate)
