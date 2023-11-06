@@ -4,7 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Setup workspace",
+            "label": "Setup workspace (yarn)",
             "type": "shell",
             "command": "cd interface && yarn install",
             "problemMatcher": []
@@ -20,6 +20,16 @@
             "type": "shell",
             "command": "source /Python3_venvs/coqui-tts/bin/activate && tts-server --use_cuda true",
             "problemMatcher": []
+        },
+        {
+            "label": "build",
+            "detail": "Build workspace (frontend)",
+            "type": "shell",
+            "command": "cd interface && yarn",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }
