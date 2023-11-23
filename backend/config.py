@@ -1,4 +1,5 @@
 from diart.blocks import SpeakerDiarizationConfig
+from diart.models import SegmentationModel
 from enum import Enum
 
 TRANSCRIPTION_DEVICE = "cuda"  # use 'cpu' if it doesn't work
@@ -11,6 +12,7 @@ NEW_SPEAKER_THRESHOLD = 0.57  # Threshold for new speaker detection, the lower, 
 STEP = 0.5
 
 DIARIZATION_PIPELINE_CONFIG = SpeakerDiarizationConfig(
+    segmentation= SegmentationModel.from_pretrained("pyannote/segmentation-3.0"),
     duration=SLIDING_WINDOW_LENGTH,
     step=STEP,
     latency="min",
