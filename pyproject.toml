@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "thesis-prototype"
+version = "0.1.0"
+description = "This is a prototype I am using in my master's thesis"
+authors = ["Daniel Hackbarth"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+diart = "^0.9.0"
+python-socketio = "^5.10.0"
+faster-whisper = "^0.9.0"
+stable-ts = "^2.13.4"
+torch = {version = "^2.1.1+cu118", source = "pytorch"}
+torchvision = {version = "^0.16.1+cu118", source = "pytorch"}
+torchaudio = {version = "^2.1.1+cu118", source = "pytorch"}
+
+
+[[tool.poetry.source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cu118"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

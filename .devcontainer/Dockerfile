@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 
 # Install necessary system dependencies (especially for audio stuff)
 RUN apt-get update && \
@@ -26,16 +26,12 @@ RUN mkdir /Python3_venvs && \
 	cd /Python3_venvs && \
 	python3 -m venv coqui-tts && \
 	. ./coqui-tts/bin/activate && \
-	pip3 install 'tts==0.19.1' && \
-	rm -rf $HOME/.cache/pip
-
-# Install dependencies for whisper playground
-COPY requirements-whisper.txt /Python3_venvs
-RUN cd /Python3_venvs && \
-	python3 -m venv whisper && . ./whisper/bin/activate && \
-	pip3 install -U pip setuptools wheel && \
-	pip3 install -r requirements-whisper.txt && \
+	pip3 install 'tts==0.20.6' && \
 	rm -rf $HOME/.cache/pip
 
 # Update yarn to newest version
 RUN yarn set version stable
+
+# Install poetry
+RUN su daniel -c 'curl -sSL https://install.python-poetry.org | python3 - && \
+	/home/daniel/.local/bin/poetry completions bash >> /home/daniel/.bash_completion'

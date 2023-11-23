@@ -48,7 +48,6 @@
             "request": "launch",
             "cwd": "${workspaceFolder}/backend",
             "program": "server.py",
-            "python": "/Python3_venvs/whisper/bin/python"
         }
     ]
 }

@@ -30,6 +30,13 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Install dependencies",
+            "detail": "Install dependencies using poetry",
+            "type": "shell",
+            "command": "poetry install",
+            "problemMatcher": []
         }
     ]
 }
