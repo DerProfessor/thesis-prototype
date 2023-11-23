@@ -1,6 +1,6 @@
 export const MIC_SAMPLE_RATE = 16000;
 export const BLOCK_SIZE = 8192;
-export const TRANSCRIPTION_METHODS = ["real-time", "sequential"];
+export const TRANSCRIPTION_METHODS = ["real-time", "sequential", "real-time-dialog"];
 export const BACKEND_ADDRESS = "http://localhost:8000";
 export const STEP_SIZE = 0.5; // must conform to backend config
 export const INITIALIZATION_DURATION = 5; // the time it takes the diarization pipeline to initialize in the real-time mode, must conform to backend config

@@ -106,6 +106,8 @@ const App = ({ classes }) => {
       setTranscribedData((prevData) => [...prevData, ...data]);
     } else if (transcriptionMethod === "sequential") {
       setTranscribedData(data);
+    } else if (transcriptionMethod === 'real-time-dialog') {
+      setTranscribedData((prevData => [...prevData, ...data]));
     }
   }
 
