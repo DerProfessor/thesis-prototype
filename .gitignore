@@ -4,3 +4,12 @@ backend/**/__pycache__/
 /.vscode
 # Ignore cache dir for torch and huggingface models
 /.cache
+
+# Ignore yarn packages
+interface/.yarn/*
+!/interface/.yarn/cache
+!/interface/.yarn/patches
+!/interface/.yarn/plugins
+!/interface/.yarn/releases
+!/interface/.yarn/sdks
+!/interface/.yarn/versions
