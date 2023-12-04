@@ -58,13 +58,13 @@ const App = ({ classes }) => {
   const [audioData, setAudioData] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isStreamPending, setIsStreamPending] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("english");
-  const [selectedModel, setSelectedModel] = useState("small");
+  const [selectedLanguage, setSelectedLanguage] = useState("german");
+  const [selectedModel, setSelectedModel] = useState("medium");
   const [transcribeTimeout, setTranscribeTimeout] = useState(5);
   const [beamSize, setBeamSize] = useState(1);
   const [errorMessages, setErrorMessages] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
-  const [transcriptionMethod, setTranscriptionMethod] = useState("real-time");
+  const [transcriptionMethod, setTranscriptionMethod] = useState("sequential-dialog");
 
   const socketRef = useRef(null);
 
@@ -106,8 +106,8 @@ const App = ({ classes }) => {
       setTranscribedData((prevData) => [...prevData, ...data]);
     } else if (transcriptionMethod === "sequential") {
       setTranscribedData(data);
-    } else if (transcriptionMethod === 'real-time-dialog') {
-      setTranscribedData((prevData => [...prevData, ...data]));
+    } else if (transcriptionMethod === 'sequential-dialog') {
+      setTranscribedData(data);
     }
   }
 
@@ -220,6 +220,13 @@ const App = ({ classes }) => {
           (transcriptionData) => {
             console.log(`transcriptionData: ${transcriptionData}`);
             handleTranscribedData(transcriptionData);
+          }
+        );
+
+        socketRef.current.on(
+          "dialogProcessingStart",
+          () => {
+            console.log("Received dialogstart Event!");
           }
         );
       })

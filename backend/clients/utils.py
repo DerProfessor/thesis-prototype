@@ -1,14 +1,14 @@
 import logging
 from clients.RealTimeClient import RealTimeClient
 from clients.SequentialClient import SequentialClient
-from clients.RealTimeDialogClient import RealTimeDialogClient
+from clients.SequentialDialogClient import SequentialDialogClient
 from enum import Enum
 
 
 class TranscriptionMethod(Enum):
     REAL_TIME = RealTimeClient
     SEQUENTIAL = SequentialClient
-    REAL_TIME_DIALOG = RealTimeDialogClient
+    SEQUENTIAL_DIALOG = SequentialDialogClient
 
 
 def format_transcription_method_name(transcription_method):

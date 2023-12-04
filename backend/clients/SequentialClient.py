@@ -7,14 +7,19 @@ import numpy as np
 from config import STEP, TEMP_FILE_PATH, REQUIRED_AUDIO_TYPE, ClientState
 from pyannote.audio import Pipeline
 from clients.Client import Client
+from torch import cuda
+from torch import device
 
 
 class SequentialClient(Client):
 
     def __init__(self, sid, socket, config):
         super().__init__(sid, socket, config)
-        self.diarization_pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization")
+        self.diarization_pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1")
+        if cuda.is_available():
+            self.diarization_pipeline.to(device("cuda"))
         self.cleanup_needed = True
+        self.start_dialog_transcription = False
 
     async def start_transcribing(self):
         self.transcription_thread = threading.Thread(target=self.stream_sequential_transcription)
@@ -26,6 +31,7 @@ class SequentialClient(Client):
         assert buffer.dtype == REQUIRED_AUDIO_TYPE, f"audio array data type must be {REQUIRED_AUDIO_TYPE}"
         save_batch_to_wav(buffer, TEMP_FILE_PATH)
         diarization = self.diarization_pipeline(TEMP_FILE_PATH)
+        logging.info("Diarization complete")
         return diarization
 
     def transcribe_buffer(self, buffer: np.ndarray):
@@ -56,10 +62,11 @@ class SequentialClient(Client):
                 logging.info("Client disconnected, ending transcription...")
                 break
             if not self.state == ClientState.ENDING_STREAM:
-                if chunk_counter >= batch_size:
+                if chunk_counter >= batch_size or self.start_dialog_transcription:
                     buffer_float32 = self.convert_buffer_to_float32(buffer)
                     self.transcribe_buffer(buffer_float32)
                     chunk_counter = 0
+                    self.start_dialog_transcription = False
 
                 if not self.audio_chunks.empty():
                     current_chunk = self.audio_chunks.get()
