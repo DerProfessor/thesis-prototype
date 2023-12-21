@@ -4,7 +4,10 @@ from diart.utils import decode_audio
 import logging
 import time
 import asyncio
-from config import STEP, TEMP_FILE_PATH, REQUIRED_AUDIO_TYPE, ClientState
+from config import STEP, TEMP_FILE_PATH, REQUIRED_AUDIO_TYPE, ClientState, RASA_CONFIG, COQUI_ADDRESS
+import requests
+import soundfile as sf
+import numpy as np
 
 class SequentialDialogClient(SequentialClient):
 
@@ -13,19 +16,68 @@ class SequentialDialogClient(SequentialClient):
         self.last_chunk_voiced = False
         self.chunks_total_silence = 0
         self.tasks = set()
+        self.last_chunk = None
     
-    def send_dialogStart_msg(self):
-        task = asyncio.create_task(self.socket.emit("dialogProcessingStart"))
-        self.tasks.add(task)
-        task.add_done_callback(self.tasks.discard)
+    def call_dialog_assistant(self):
+        # TODO: Handle multiple speakers more gracefully
+        if len(self.current_transcription) > 0:
+            text = self.current_transcription[0]["text"]
+            message = {"sender": RASA_CONFIG['user'], "message": text}
+            response = requests.post(
+                RASA_CONFIG["rasa_address"],
+                json=message,
+                headers={"Content-Type": "application/json"})
+            if response.status_code == 200:
+                return response
+            else:
+                logging.info("POST request failed. Response: " + response.text)
+                return None
+        else:
+            logging.warning("No transcription available to send to dialog assistant")
+            return "Tut mir leid, das habe nicht verstanden."
+
+    def call_speak(self, response):
+        #TODO: Handle multiple answers more gracefully
+        response_json = response.json()
+        if len(response_json) > 0:
+            text = response_json[0]
+            response = requests.post(
+                COQUI_ADDRESS,
+                json=text,
+                headers={"Content-Type": "application/json"}
+            )
+            if response.status_code == 200:
+                with open("../response.wav", "wb") as f:
+                    f.write(response.content)
+                logging.info("Response written to file")
+        else:
+            logging.warning("Something went wrong during dialog processing")
+    
+    def send_dialog_data(self, response):
+        response_json = response.json()
+        if len(response_json) > 0:
+            text = response_json[0]["text"]
+            asyncio.run(self.socket.emit("dialogDataAvailable", text))
+            logging.info("Dialog data sent")
+        else:
+            logging.warning("Something went wrong during dialog processing")
+
+    def handle_dialogStart(self):
+        asyncio.run(self.socket.emit("dialogProcessingStart"))
+        response = self.call_dialog_assistant()
+        self.send_dialog_data(response)
+        self.call_speak(response)
+        asyncio.run(self.socket.emit("dialogProcessingEnd"))
 
     def handle_chunk(self, chunk):
         speech_present, speech_confidence = silero_vad(decode_audio(chunk))
         if speech_present:
+            if self.chunks_total_silence > 0:
+                # Add previous chunk to better understand beginning of speech
+                self.chunks_total_silence = 0
+                self.audio_chunks.put(self.last_chunk)
             self.audio_chunks.put(chunk)
             self.last_chunk_voiced = True
-            if self.chunks_total_silence > 0:
-                self.chunks_total_silence = 0
         else:
             if self.last_chunk_voiced and self.chunks_total_silence == 0:
                 self.last_chunk_voiced = False
@@ -34,8 +86,8 @@ class SequentialDialogClient(SequentialClient):
                 self.chunks_total_silence += 1
                 if self.chunks_total_silence == 3:
                     logging.info("It's been more than ~1.5 second of silence")
-                    self.send_dialogStart_msg()
                     self.start_dialog_transcription = True
+        self.last_chunk = chunk
         logging.debug("Chunk added")
 
     
@@ -58,6 +110,8 @@ class SequentialDialogClient(SequentialClient):
                     self.start_dialog_transcription = False
                     # Is resetting the buffer a good idea?
                     buffer = None
+
+                    self.handle_dialogStart()
 
                 if not self.audio_chunks.empty():
                     current_chunk = self.audio_chunks.get()

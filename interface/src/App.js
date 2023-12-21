@@ -5,6 +5,7 @@ import Typography from "@material-ui/core/Typography";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import TranscribeOutput from "./TranscribeOutput";
+import DialogOutput from "./DialogOutput";
 import SettingsSections from "./SettingsSection";
 import ErrorMessage from "./ErrorMessage";
 import StatusMessage from "./StatusMessage";
@@ -55,6 +56,7 @@ const useStyles = () => ({
 
 const App = ({ classes }) => {
   const [transcribedData, setTranscribedData] = useState([]);
+  const [dialogData, setDialogData] = useState([]);
   const [audioData, setAudioData] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isStreamPending, setIsStreamPending] = useState(false);
@@ -65,6 +67,7 @@ const App = ({ classes }) => {
   const [errorMessages, setErrorMessages] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
   const [transcriptionMethod, setTranscriptionMethod] = useState("sequential-dialog");
+  const [isRecordingPaused, setIsRecordingPaused] = useState(false);
 
   const socketRef = useRef(null);
 
@@ -109,6 +112,10 @@ const App = ({ classes }) => {
     } else if (transcriptionMethod === 'sequential-dialog') {
       setTranscribedData(data);
     }
+  }
+
+  function handleDialogData(data) {
+    setDialogData(data);
   }
 
   const validateConfig = () => {
@@ -174,11 +181,12 @@ const App = ({ classes }) => {
         processor.connect(audioContextRef.current.destination);
 
         processor.onaudioprocess = function (event) {
-          var data = event.inputBuffer.getChannelData(0);
-          setAudioData(new Float32Array(data));
-
-          if (socketRef.current !== null && !isStreamPending) {
-            socketRef.current.emit("audioChunk", b64encode(data));
+          if (!isRecordingPaused) {
+            var data = event.inputBuffer.getChannelData(0);
+            setAudioData(new Float32Array(data));
+            if (socketRef.current !== null && !isStreamPending) {
+              socketRef.current.emit("audioChunk", b64encode(data));
+            }
           }
         };
 
@@ -227,6 +235,23 @@ const App = ({ classes }) => {
           "dialogProcessingStart",
           () => {
             console.log("Received dialogstart Event!");
+            pauseRecording();
+          }
+        );
+
+        socketRef.current.on(
+          "dialogDataAvailable",
+          (dialogData) => {
+            console.log(`dialogData: ${dialogData}`);
+            handleDialogData(dialogData);
+          }
+        );
+
+        socketRef.current.on(
+          "dialogProcessingEnd",
+          () => {
+            console.log("Received dialogend Event!");
+            resumeRecording();
           }
         );
       })
@@ -237,6 +262,21 @@ const App = ({ classes }) => {
         setIsRecording(false);
       });
   }
+  function resumeRecording() {
+    setIsRecordingPaused(false);
+    setStatusMessage("Resuming recording...");
+    console.info("Recording resumed.");
+  }
+
+  function pauseRecording() {
+    //setIsStreamPending(true);
+    setStatusMessage("Sending transcribed output to dialog assistant, recording paused.");
+    setIsRecordingPaused(true);
+    //isStreamEndingRef.current = true;
+    setAudioData([]);
+    console.info("Recording is paused until dialog processing is finished.");
+  }
+
 
   function stopRecording() {
     streamRef.current.getTracks().forEach((track) => track.stop());
@@ -305,13 +345,18 @@ const App = ({ classes }) => {
             Start transcribing
           </Button>
         )}
-        {isRecording && (
+        {isRecording && !isRecordingPaused && (
           <Button
             onClick={stopStream}
             variant="danger"
             disabled={isStreamPending}
           >
             Stop
+          </Button>
+        )}
+        {isRecording && isRecordingPaused && (
+          <Button disabled>
+            Paused
           </Button>
         )}
       </div>
@@ -323,6 +368,9 @@ const App = ({ classes }) => {
         <TranscribeOutput data={transcribedData} />
       </div>
 
+      <div className={classes.dialogOutput}>
+        <DialogOutput data={dialogData} />
+      </div>
       <PulseLoader
         sizeUnit={"px"}
         size={20}

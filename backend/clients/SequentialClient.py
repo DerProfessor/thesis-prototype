@@ -20,6 +20,7 @@ class SequentialClient(Client):
             self.diarization_pipeline.to(device("cuda"))
         self.cleanup_needed = True
         self.start_dialog_transcription = False
+        self.current_transcription = None
 
     async def start_transcribing(self):
         self.transcription_thread = threading.Thread(target=self.stream_sequential_transcription)
@@ -37,8 +38,8 @@ class SequentialClient(Client):
     def transcribe_buffer(self, buffer: np.ndarray):
         assert buffer.dtype == REQUIRED_AUDIO_TYPE, f"audio array data type must be {REQUIRED_AUDIO_TYPE}"
         diarization = self.get_diarization(buffer)
-        result = self.transcriber.sequential_transcription(buffer, diarization)
-        asyncio.run(self.send_transcription(result))
+        self.current_transcription = self.transcriber.sequential_transcription(buffer, diarization)
+        asyncio.run(self.send_transcription(self.current_transcription))
 
     @staticmethod
     def convert_buffer_to_float32(buffer: np.ndarray):

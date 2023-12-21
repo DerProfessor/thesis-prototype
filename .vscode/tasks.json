@@ -12,7 +12,7 @@
         {
             "label": "Huggingface login",
             "type": "shell",
-            "command": "source /Python3_venvs/coqui-tts/bin/activate && huggingface-cli login",
+            "command": "huggingface-cli login",
             "problemMatcher": []
         },
         {

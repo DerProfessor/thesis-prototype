@@ -166,3 +166,10 @@ LANGUAGE_MAPPING = {
     "javanese": "jv",
     "sundanese": "su",
 }
+
+RASA_CONFIG = {
+    "rasa_address": "http://localhost:5005/webhooks/rest/webhook",
+    "user": "thesis_prototype_user"
+}
+
+COQUI_ADDRESS = "http://localhost:8008/api/speak-german"
