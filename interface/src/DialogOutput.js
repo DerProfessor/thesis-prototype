@@ -24,29 +24,13 @@ const DialogOutput = ({ data, classes }) => {
         scrollToBottom();
       }, [data]);
 
-    const audioRef = useRef(null);
-
-    //const paragraphs = data.split("\n");
-    const handlePlay = () => {
-        audioRef.current.play();
-    }
-
-    const audioFileName = "../response.wav"
-
     return (
         <div>
-            <h4>Dialog output:</h4>
+            <h5>Dialog output:</h5>
             <div>
                 <Typography variant="body1" component="p">
                 {data}
                 </Typography>
-            </div>
-            <div>
-                <button onClick={handlePlay}>Play Audio</button>
-                <audio ref={audioRef} controls>
-                    <source src={audioFileName} type="audio/wav" />
-                    Your browser does not support the audio element.
-                </audio>
             </div>
             <div ref={transcriptEndRef}></div>
         </div>

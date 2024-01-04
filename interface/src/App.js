@@ -22,6 +22,7 @@ import {
 import WaveformVisualizer from "./WaveformVisualizer";
 import io from "socket.io-client";
 import { PulseLoader } from "react-spinners";
+import AudioPlayer from "./AudioPlayer";
 
 const useStyles = () => ({
   root: {
@@ -57,6 +58,7 @@ const useStyles = () => ({
 const App = ({ classes }) => {
   const [transcribedData, setTranscribedData] = useState([]);
   const [dialogData, setDialogData] = useState([]);
+  const [binaryWavData, setBinaryWavData] = useState(null);
   const [audioData, setAudioData] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isStreamPending, setIsStreamPending] = useState(false);
@@ -116,6 +118,10 @@ const App = ({ classes }) => {
 
   function handleDialogData(data) {
     setDialogData(data);
+  }
+
+  function handleDialogResponse(audioWav) {
+    setBinaryWavData(audioWav);
   }
 
   const validateConfig = () => {
@@ -248,6 +254,14 @@ const App = ({ classes }) => {
         );
 
         socketRef.current.on(
+          "dialogResponseAvailable",
+          (dialogResponse) => {
+            console.log("Received dialog response (audio)");
+            handleDialogResponse(dialogResponse);
+          }
+        )
+
+        socketRef.current.on(
           "dialogProcessingEnd",
           () => {
             console.log("Received dialogend Event!");
@@ -371,12 +385,20 @@ const App = ({ classes }) => {
         <WaveformVisualizer audioData={audioData} />
       </div>
 
-      <div className={classes.transcribeOutput}>
-        <TranscribeOutput data={transcribedData} />
-      </div>
-
-      <div className={classes.dialogOutput}>
-        <DialogOutput data={dialogData} />
+      <div className="container">
+        <div className="box">
+          <div className={classes.transcribeOutput}>
+            <TranscribeOutput data={transcribedData} />
+          </div>
+        </div>
+        <div className="box">
+          <div className={classes.dialogOutput}>
+            <DialogOutput data={dialogData} />
+          </div>
+          <div className={classes.audioPlayer}>
+            <AudioPlayer binaryWavData={binaryWavData} />
+          </div>
+        </div>
       </div>
     </div>
   );
