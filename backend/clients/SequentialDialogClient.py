@@ -47,9 +47,8 @@ class SequentialDialogClient(SequentialClient):
                 headers={"Content-Type": "application/json"}
             )
             if response.status_code == 200:
-                with open("../response.wav", "wb") as f:
-                    f.write(response.content)
-                logging.info("Response written to file")
+                asyncio.run(self.socket.emit("dialogResponseAvailable", response.content))
+                logging.info("Response (audio) sent to client")
         else:
             logging.warning("Something went wrong during dialog processing")
     
