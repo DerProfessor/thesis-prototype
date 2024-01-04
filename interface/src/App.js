@@ -27,7 +27,7 @@ const useStyles = () => ({
   root: {
     display: "flex",
     flex: "1",
-    margin: "100px 0px 100px 0px",
+    margin: "40px 0px 40px 0px",
     alignItems: "center",
     textAlign: "center",
     flexDirection: "column",
@@ -304,7 +304,7 @@ const App = ({ classes }) => {
     <div className={classes.root}>
       <div className={classes.title}>
         <Typography variant="h3">
-          Whisper Playground{" "}
+          Thesis prototype{" "}
           <span role="img" aria-label="microphone-emoji">
             🎤
           </span>
@@ -328,6 +328,13 @@ const App = ({ classes }) => {
           onMethodChange={setTranscriptionMethod}
         />
       </div>
+      <PulseLoader
+        sizeUnit={"px"}
+        size={20}
+        color="purple"
+        loading={isStreamPending}
+        className={classes.loadingIcon}
+      />
       {errorMessages && (
         <ErrorMessage
           messages={errorMessages}
@@ -371,13 +378,6 @@ const App = ({ classes }) => {
       <div className={classes.dialogOutput}>
         <DialogOutput data={dialogData} />
       </div>
-      <PulseLoader
-        sizeUnit={"px"}
-        size={20}
-        color="purple"
-        loading={isStreamPending}
-        className={classes.loadingIcon}
-      />
     </div>
   );
 };

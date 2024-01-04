@@ -61,7 +61,7 @@ const TranscribeOutput = ({ data, classes }) => {
 
   return (
     <div>
-      <h4>Transcription output:</h4>
+      <h5>Transcription output:</h5>
       {paragraphs.map((paragraph, index) => (
         <div key={index}>
           {index !== 0 && <br />}{" "}

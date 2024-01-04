@@ -57,7 +57,7 @@ const WaveformVisualizer = ({ audioData }) => {
     drawWaveform();
   }, [audioData]);
 
-  return <canvas ref={canvasRef} width={800} height={200}></canvas>;
+  return <canvas ref={canvasRef} width={600} height={160}></canvas>;
 };
 
 export default WaveformVisualizer;
