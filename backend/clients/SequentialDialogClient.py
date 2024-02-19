@@ -53,6 +53,8 @@ class SequentialDialogClient(SequentialClient):
             logging.warning("Something went wrong during dialog processing")
     
     def send_dialog_data(self, response):
+        if type(response) == str:
+            logging.warning("Something went wrong during dialog processing")
         response_json = response.json()
         if len(response_json) > 0:
             text = response_json[0]["text"]
