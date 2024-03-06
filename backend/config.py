@@ -167,9 +167,9 @@ LANGUAGE_MAPPING = {
     "sundanese": "su",
 }
 
-RASA_CONFIG = {
-    "rasa_address": "http://localhost:5005/webhooks/rest/webhook",
-    "user": "thesis_prototype_user"
+LANGCHAIN_CONFIG = {
+    "address": "http://127.0.0.1:8086/qa_with_memory/",
+    "session_id": "47"
 }
 
 COQUI_ADDRESS = "http://localhost:8008/api/speak-german"

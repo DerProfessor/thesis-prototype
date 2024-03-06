@@ -12,7 +12,7 @@
         {
             "label": "Huggingface login",
             "type": "shell",
-            "command": "huggingface-cli login",
+            "command": "poetry run huggingface-cli login",
             "problemMatcher": []
         },
         {

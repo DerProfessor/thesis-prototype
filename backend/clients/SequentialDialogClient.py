@@ -4,10 +4,13 @@ from diart.utils import decode_audio
 import logging
 import time
 import asyncio
-from config import STEP, TEMP_FILE_PATH, REQUIRED_AUDIO_TYPE, ClientState, RASA_CONFIG, COQUI_ADDRESS
+from config import STEP, TEMP_FILE_PATH, REQUIRED_AUDIO_TYPE, ClientState, LANGCHAIN_CONFIG, COQUI_ADDRESS
 import requests
 import soundfile as sf
 import numpy as np
+
+from langserve.client import RemoteRunnable
+from httpx import ConnectError
 
 class SequentialDialogClient(SequentialClient):
 
@@ -17,33 +20,32 @@ class SequentialDialogClient(SequentialClient):
         self.chunks_total_silence = 0
         self.tasks = set()
         self.last_chunk = None
+        self.langchain_client = RemoteRunnable(LANGCHAIN_CONFIG["address"])
+        self.session_id = LANGCHAIN_CONFIG["session_id"]
     
     def call_dialog_assistant(self):
         # TODO: Handle multiple speakers more gracefully
         if len(self.current_transcription) > 0:
             text = self.current_transcription[0]["text"]
-            message = {"sender": RASA_CONFIG['user'], "message": text}
-            response = requests.post(
-                RASA_CONFIG["rasa_address"],
-                json=message,
-                headers={"Content-Type": "application/json"})
-            if response.status_code == 200:
-                return response
-            else:
-                logging.info("POST request failed. Response: " + response.text)
-                return None
+            try:
+                result = self.langchain_client.invoke(input=text,
+                                                    config={"configurable": {"session_id": self.session_id}}
+                                                    )
+                return result
+            except ConnectError:
+                logging.error("Could not connect to langchain")
+                return "Tut mir leid, im Moment erfahre ich leider technische Probleme."
         else:
             logging.warning("No transcription available to send to dialog assistant")
             return "Tut mir leid, das habe nicht verstanden."
 
     def call_speak(self, response):
         #TODO: Handle multiple answers more gracefully
-        response_json = response.json()
-        if len(response_json) > 0:
-            text = response_json[0]
+        response_json = {"text": response}
+        if len(response) > 0:
             response = requests.post(
                 COQUI_ADDRESS,
-                json=text,
+                json=response_json,
                 headers={"Content-Type": "application/json"}
             )
             if response.status_code == 200:
@@ -53,12 +55,8 @@ class SequentialDialogClient(SequentialClient):
             logging.warning("Something went wrong during dialog processing")
     
     def send_dialog_data(self, response):
-        if type(response) == str:
-            logging.warning("Something went wrong during dialog processing")
-        response_json = response.json()
-        if len(response_json) > 0:
-            text = response_json[0]["text"]
-            asyncio.run(self.socket.emit("dialogDataAvailable", text))
+        if len(response) > 0:
+            asyncio.run(self.socket.emit("dialogDataAvailable", response))
             logging.info("Dialog data sent")
         else:
             logging.warning("Something went wrong during dialog processing")
