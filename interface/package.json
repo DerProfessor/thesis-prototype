@@ -7,20 +7,23 @@
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.15.12",
     "@mui/styles": "^5.15.12",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.5.0",
-    "@testing-library/user-event": "^7.2.1",
-    "@typescript-eslint/eslint-plugin": "6.21.0",
-    "@typescript-eslint/parser": "6.21.0",
+    "@popperjs/core": "^2.11.8",
+    "@testing-library/dom": "^9.3.4",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@typescript-eslint/eslint-plugin": "7.1.1",
+    "@typescript-eslint/parser": "7.1.1",
     "bootstrap": "^5.3.3",
+    "eslint": "^8.57.0",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.1",
     "react-dom": "^18.2.0",
     "react-mic": "^12.4.6",
     "react-pro-sidebar": "^1.1.0",
-    "react-scripts": "^3.4.4",
-    "react-spinners": "^0.10.6",
+    "react-scripts": "^5.0.1",
+    "react-spinners": "^0.13.8",
     "socket.io-client": "^4.7.4",
     "typescript": "^5.4.2"
   },
@@ -46,5 +49,8 @@
       "last 1 safari version"
     ]
   },
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.0.2",
+  "devDependencies": {
+    "@types/eslint": "^8"
+  }
 }
