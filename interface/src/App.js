@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Button } from "react-bootstrap";
+import { ThemeProvider, createMuiTheme, makeStyles, createTheme } from "@material-ui/core/styles";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Typography from "@material-ui/core/Typography";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -24,7 +25,9 @@ import io from "socket.io-client";
 import { PulseLoader } from "react-spinners";
 import AudioPlayer from "./AudioPlayer";
 
-const useStyles = () => ({
+const theme = createMuiTheme();
+
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flex: "1",
@@ -52,10 +55,14 @@ const useStyles = () => ({
   },
   recordIllustration: {
     width: "100px",
-  },
-});
+  }
+}));
 
-const App = ({ classes }) => {
+//const useStyles = makeStyles((theme) => {useStyles_old});
+
+function App() {
+  const classes = useStyles();
+
   const [transcribedData, setTranscribedData] = useState([]);
   const [dialogData, setDialogData] = useState([]);
   const [binaryWavData, setBinaryWavData] = useState(null);
@@ -315,6 +322,7 @@ const App = ({ classes }) => {
   }
 
   return (
+    <ThemeProvider theme={theme}>
     <div className={classes.root}>
       <div className={classes.title}>
         <Typography variant="h3">
@@ -401,6 +409,7 @@ const App = ({ classes }) => {
         </div>
       </div>
     </div>
+    </ThemeProvider>
   );
 };
 
