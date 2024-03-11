@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import withStyles from "@material-ui/core/styles/withStyles";
+import withStyles from "@mui/styles/withStyles";
 
 const useStyles = () => ({
   errorPopup: {

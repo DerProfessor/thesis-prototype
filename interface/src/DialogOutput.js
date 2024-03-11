@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import withStyles from "@material-ui/core/styles/withStyles";
-import Typography from "@material-ui/core/Typography";
+import withStyles from "@mui/styles/withStyles";
+import Typography from "@mui/material/Typography";
 
 const useStyles = () => ({
     root: {

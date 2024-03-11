@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react";
 import { Button } from "react-bootstrap";
-import { ThemeProvider, createMuiTheme, makeStyles, createTheme } from "@material-ui/core/styles";
-import withStyles from "@material-ui/core/styles/withStyles";
-import Typography from "@material-ui/core/Typography";
+import createTheme from "@mui/material/styles/createTheme";
+import { ThemeProvider, makeStyles, withStyles } from "@mui/styles";
+import Typography from "@mui/material/Typography";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import TranscribeOutput from "./TranscribeOutput";
@@ -25,7 +25,7 @@ import io from "socket.io-client";
 import { PulseLoader } from "react-spinners";
 import AudioPlayer from "./AudioPlayer";
 
-const theme = createMuiTheme();
+const theme = createTheme();
 
 const useStyles = makeStyles((theme) => ({
   root: {
